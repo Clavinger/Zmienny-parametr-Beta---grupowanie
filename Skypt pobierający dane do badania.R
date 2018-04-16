@@ -1,3 +1,7 @@
+#skrypt pobiera nazwy spolek z WIG30 ze strony wikipedii, następnie ze stooq.pl pobiera dane 
+#i zapisuje na dysku twardym
+
+#pakiety
 library(quantmod)
 library(PerformanceAnalytics)
 library(RCurl)
@@ -17,7 +21,7 @@ getStooqData <- function(asset_code,rodzaj) {
 }
 
  
-
+#sciagnie nazw spolek z wikipedii
 wikiPL <- "https://pl.wikipedia.org/wiki/WIG30"
 webpage <- read_html(wikiPL,encoding = "CP-1250")
 table_links <- html_nodes(webpage, '.wikitable')
@@ -27,9 +31,16 @@ colnames(df)[1]
 df <- tab[[1]]
 tikery<-as.vector(as.matrix(select(df,  colnames(df)[2])))
 nazwy.spolek<-as.vector(as.matrix(select(df,  colnames(df)[1] )))
- 
 
-setwd("C:/Users/user/Dropbox/phd/Skrypty do R/Zmienny-parametr-Beta---grupowanie/Dane")
+
+#zapisanie tikerow do pliku
+write.csv2(tikery,file="tikery.csv", quote = TRUE)
+#zapisanie nazw spolek do pliku
+write.csv2(nazwy.spolek,file="nazwy_spolek.csv", quote = TRUE)
+
+
+#sciaganie danych na dysk twardy
+setwd("C:/Users/user/Documents/github/Zmienny-parametr-Beta---grupowanie/Dane")
 for(i in 1:length(tikery)){
   x=getStooqData(tikery[i],"m") 
   ceny = x[,5]
@@ -42,11 +53,13 @@ for(i in 1:length(tikery)){
   
 }
 
-setwd("C:/Users/user/Dropbox/phd/Skrypty do R/Zmienny-parametr-Beta---grupowanie")
+setwd("C:/Users/user/Documents/github/Zmienny-parametr-Beta---grupowanie")
+
+#czyszczenie pamieci podrecznej
 #rm(list = ls())
 
 
-#odczytywanie
-y=read.csv.zoo("ALR_zwroty.csv",sep=',')
-y=as.xts(y)
-plot.xts(y)
+#przyklad jak odczytywać dane
+#y=read.csv.zoo("ALR_zwroty.csv",sep=',')
+#y=as.xts(y)
+#plot.xts(y)
